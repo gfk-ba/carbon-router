@@ -1,0 +1,33 @@
+<template name="carbon__layout">
+    {{#with _layout}}
+        {{#with data}}
+            {{> ../template}}
+        {{/with}}
+    {{/with}}
+</template>
+
+
+<template name="carbon__default_layout">
+    {{> carbon__content}}
+</template>
+
+
+<template name="carbon__content">
+    {{#with yield}}
+        {{#with data}}
+            {{> ../template}}
+        {{/with}}
+    {{/with}}
+</template>
+
+
+<template name="carbon__default_loading">
+    <h1>Loading...</h1>
+</template>
+
+
+<template name="carbon__default_not_found">
+    <h1>Not found...</h1>
+</template>
+
+
