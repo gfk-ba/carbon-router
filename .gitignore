@@ -1,0 +1,4 @@
+.build*
+packages/
+smart.lock
+.vimproject
