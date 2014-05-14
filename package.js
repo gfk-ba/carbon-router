@@ -28,7 +28,7 @@ Package.on_test(function (api) {
     api.use('carbon-router', ['client', 'server']);
     api.use('tinytest', ['client', 'server']);
 
-    api.add_files('test/util.js', 'client'); // TODO
-    api.add_files('test/client/router.js', 'client'); // TODO
+    api.add_files('test/util.js', 'client');
+    api.add_files('test/client/router.js', 'client');
 });
 
