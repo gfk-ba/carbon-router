@@ -13,6 +13,7 @@ Package.on_use(function (api) {
 
     api.add_files('lib/client/layout.html', 'client');
     api.add_files('lib/client/util.js', 'client');
+    api.add_files('lib/client/controller.js', 'client');
     api.add_files('lib/client/router.js', 'client');
     api.add_files('lib/client/template.js', 'client');
     api.add_files('lib/client/app.js', 'client');
@@ -20,6 +21,7 @@ Package.on_use(function (api) {
     api.export('Router', 'client');
 
     api.export('Util', 'client', {testOnly: true});
+    api.export('CarbonController', 'client', {testOnly: true});
     api.export('CarbonRouter', 'client', {testOnly: true});
 });
 
@@ -29,6 +31,7 @@ Package.on_test(function (api) {
     api.use('tinytest', ['client', 'server']);
 
     api.add_files('test/util.js', 'client');
+    api.add_files('test/client/controller.js', 'client');
     api.add_files('test/client/router.js', 'client');
 });
 
