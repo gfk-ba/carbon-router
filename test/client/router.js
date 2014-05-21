@@ -44,6 +44,16 @@ Tinytest.add('#CarbonRouter - Construct URL for a route', function(test) {
 
 
 Tinytest.add('#CarbonRouter - Go to URL and test current controller', function(test) {
+    Template['tpl_global_layout'] = 'Template::tpl_global_layout';
+    Template['tpl_loading_content'] = 'Template::tpl_loading_content';
+    Template['tpl_loading_layout'] = 'Template::tpl_loading_layout';
+    Template['tpl_not_found_content'] = 'Template::tpl_not_found_content';
+    Template['tpl_not_found_layout'] = 'Template::tpl_not_found_layout';
+    Template['tpl_uno'] = 'Template::tpl_uno';
+    Template['tpl_oneParam'] = 'Template::tpl_oneParam';
+    Template['tpl_twoParams'] = 'Template::tpl_twoParams';
+    Template['tpl_private_layout'] = 'Template::tpl_private_layout';
+
     var router = new CarbonRouter();
     var controller = null;
     var layout = null;
@@ -75,22 +85,22 @@ Tinytest.add('#CarbonRouter - Go to URL and test current controller', function(t
     controller = router.current();
     layout = controller.getLayoutTemplateAndData();
     content = controller.getContentTemplateAndData();
-    test.equal(content.template, Template['tpl_loading_content'], 'Content template for loading from router config.');
+    test.equal(content.template(), Template['tpl_loading_content'], 'Content template for loading from router config.');
     test.equal(layout.template, Template['tpl_loading_layout'], 'Layout template for loading from router config.');
 
     router.go('uno');
     controller = router.current();
     layout = controller.getLayoutTemplateAndData();
     content = controller.getContentTemplateAndData();
-    test.equal(content.template, Template['tpl_uno'], 'Content template from route.');
-    test.equal(content.layout, Template['tpl_global_layout'], 'Layout template from router config because not specified in route.');
+    test.equal(content.template(), Template['tpl_uno'], 'Content template from route.');
+    test.equal(layout.template, Template['tpl_global_layout'], 'Layout template from router config because not specified in route.');
 
     router.goUrl('/prefix/123');
     controller = router.current();
     layout = controller.getLayoutTemplateAndData();
     content = controller.getContentTemplateAndData();
-    test.equal(content.template, Template['tpl_oneParam'], 'Content template from route.');
-    test.equal(content.layout, Template['tpl_private_layout'], 'Layout template from route.');
+    test.equal(content.template(), Template['tpl_oneParam'], 'Content template from route.');
+    test.equal(layout.template, Template['tpl_private_layout'], 'Layout template from route.');
     test.equal(content.data().x, '123', 'URL parameter in content data.');
     test.equal(content.data().x, '123', 'URL parameter in layout data.');
 
@@ -98,8 +108,8 @@ Tinytest.add('#CarbonRouter - Go to URL and test current controller', function(t
     controller = router.current();
     layout = controller.getLayoutTemplateAndData();
     content = controller.getContentTemplateAndData();
-    test.equal(content.template, Template['tpl_twoParams'], 'Content template from route.');
-    test.equal(content.layout, Template['tpl_global_layout'], 'Layout template from router config because not specified in route.');
+    test.equal(content.template(), Template['tpl_twoParams'], 'Content template from route.');
+    test.equal(layout.template, Template['tpl_global_layout'], 'Layout template from router config because not specified in route.');
     test.equal(content.data().x, '123', 'URL parameters in content data.');
     test.equal(content.data().x, '123', 'URL parameters in layout data.');
     test.equal(content.data().y, '456', 'URL parameters in content data.');
@@ -109,8 +119,8 @@ Tinytest.add('#CarbonRouter - Go to URL and test current controller', function(t
     controller = router.current();
     layout = controller.getLayoutTemplateAndData();
     content = controller.getContentTemplateAndData();
-    test.equal(content.template, Template['tpl_not_found_content'], 'Content template for not-found from router config.');
-    test.equal(content.layout, Template['tpl_not_found_layout'], 'Layout template for not-found from router config.');
+    test.equal(content.template(), Template['tpl_not_found_content'], 'Content template for not-found from router config.');
+    test.equal(layout.template, Template['tpl_not_found_layout'], 'Layout template for not-found from router config.');
 
 });
 

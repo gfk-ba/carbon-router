@@ -14,8 +14,10 @@
 
 <template name="carbon__content">
     {{#with yield}}
-        {{#with data}}
-            {{> ../template}}
+        {{#with data ../region}}
+            {{#with ../template ../../region}}
+                {{> this}}
+            {{/with}}
         {{/with}}
     {{/with}}
 </template>
