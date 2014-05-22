@@ -14,9 +14,9 @@
 
 <template name="carbon__content">
     {{#with yield}}
-        {{#with data ../region}}
-            {{#with ../template ../../region}}
-                {{> this}}
+        {{#with template ../region}}
+            {{#with ../data ../../region}}
+                {{> ..}}
             {{/with}}
         {{/with}}
     {{/with}}
