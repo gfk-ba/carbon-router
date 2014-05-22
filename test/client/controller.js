@@ -4,13 +4,14 @@ Tinytest.add('#CarbonController - Content data is merged', function(test) {
     controller.defaultContentTemplate = 'dummy';
     controller.addContentData({x: 123, y: 456});
     controller.addContentData({y: 'overridden', z: 789, a: 'A'});
-    controller.params = {a: 'param'};
+    controller.params = {a: 'param', b: 'param2'};
 
     var contentData = controller.getContentTemplateAndData().data();
     test.equal(contentData.x, 123, 'Non-overridden data is still available.');
     test.equal(contentData.y, 'overridden', 'Data is overridden when merging the same key.');
     test.equal(contentData.z, 789, 'New keys are merged with existing data.');
-    test.equal(contentData.a, 'param', 'Parameters always override data.');
+    test.equal(contentData.a, 'A', 'Parameter is overridden by data.');
+    test.equal(contentData.b, 'param2', 'Non-overridden paramaters are available in data.');
 });
 
 
@@ -28,7 +29,7 @@ Tinytest.add('#CarbonController - Layout data is merged', function(test) {
     test.equal(layoutData.x, 123, 'Non-overridden data is still available.');
     test.equal(layoutData.y, 'overridden', 'Data is overridden when merging the same key.');
     test.equal(layoutData.z, 789, 'New keys are merged with existing data.');
-    test.equal(layoutData.a, 'param', 'Parameters always override data.');
+    test.equal(layoutData.a, 'A', 'Parameter is overridden by data.');
 
     var contentData = layoutData[contentKey].data();
     test.equal(contentData.c, 123, 'Content data is available under content key in layout data.');
