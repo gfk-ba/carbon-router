@@ -55,9 +55,11 @@ if (Meteor.isClient) {
 
 ## API
 
+### Overview
+
 These are the methods of the global `CarbonRouter` instance called `Router`, which application developers generally need:
 
-* `Router.add`: Add a route to the router. (TODO: Elaborate docs.)
+* `Router.add`: Add a route to the router.
 * `Router.configure`: Update the router configuration. (TODO: Elaborate docs.)
 * `Router.go`: Navigate to the specified route. (TODO: Elaborate docs.)
 * `Router.goUrl`: Navigate to the specified URL. (TODO: Elaborate docs.)
@@ -66,6 +68,62 @@ These are the methods of the global `CarbonRouter` instance called `Router`, whi
 These template helpers are available:
 
 * `carbonUrl`: Return the URL for the specified route.
+
+#### `Router.add(name, url, options)`
+
+Add a route to the router. It's recommended to use this only during the initialization phase of the application (i.e. before `Meteor.startup` functions are run).
+
+Parameters:
+* `name`: Unique name of the route.
+* `url`: Route URL. It can contain parameters within curly braces.
+* `options`: An object with options for this route. Valid option keys are:
+  * `contentTemplate`: Either:
+    * Name of the template to use for the page content.
+    * An object, where the keys are the names of the content regions and the values the names of the templates for those regions.
+  * `contentData`: Can either be an object or a function returning an object. The result is merged with the data context that is passed to the content template.
+    * If it's a function, it can have two (optional) parameters `data` and `region`. The first contains data that will be passed in the data context. The second is a string identifying the content region the data is for.
+  * `layoutTemplate`: Same as the `contentTemplate` option, but used for the layout template.
+  * `layoutData`: Same as the `contentData` option, but used for the data context that is passed to the layout template.
+  * `before`: Before hook function, which is called before the layout for this route is rendered.
+
+   
+#### `Router.configure(config)`
+
+TODO
+
+
+#### `Router.go(name, params)`
+
+TODO
+
+
+#### `Router.goUrl(url)`
+
+TODO
+
+
+#### `Router.url(name, params, options)`
+
+TODO
+
+
+## Customize layout
+
+TODO
+
+
+### Regions
+
+TODO
+
+
+## Hooks
+
+TODO
+
+### Before hook
+
+TODO
 
 
 ## License
