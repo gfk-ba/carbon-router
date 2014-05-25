@@ -89,20 +89,51 @@ Parameters:
    
 #### `Router.configure(config)`
 
-TODO
+Change the configuration options of the router. It's recommended to use this only during the initialization phase of the application (i.e. before `Meteor.startup` functions are run).
+
+Parameters:
+* `config`: An object with the configuration changes. Valid keys are:
+  * `layoutTemplate`: Name of the layout template to use if no layout template is specified for the route itself.
+  * `layoutData`: Layout data object or function returning an object, works the same as the `layoutData` option of `Router.add`. This layout-data is not overridden by the layout-data specified for the route, but it's extended by the layout-data of the route.
+  * `contentTemplate`: Name of the content template to use if no content template is specified for the route itself.
+  * `contentData`: Same as `layoutData`, only then for the content data.
+  * `loading`: Object describing the template to use when showing the loading page. It contains two keys:
+    * `layoutTemplate`: Name of the layout template to use. If not specified, the default layout template of the router is used.
+    * `contentTemplate`: Name of the content template to use.
+  * `notFound`: Same as the `loading` option, only then for the page-no-found template.
+  * `contentKey`: The data key that is used to pass the content template and data in the context of the layout template. The default value is `yield`.
+  * `autoLoad`: A boolean option indicating whether to automatically load the route corresponding to the current URL on startup. Default value: `true`.
 
 
 #### `Router.go(name, params)`
 
-TODO
+This is a convenience wrapper connecting `Router.url(...)` and `Router.goUrl(url)`. It will navigate to the named route with the specified route parameters.
+
+Parameters:
+* `name`: Name of the route to go to..
+* `params`: An object with route parameter keys and their values.
 
 
 #### `Router.goUrl(url)`
 
-TODO
+Navigate to the specified URL. Make sure the URL is matched by one of the routes in the router.
+
+Parameters:
+* `url`: URL string to navigate to. Can be specified both with or without the application origin and path prefix.
 
 
 #### `Router.url(name, params, options)`
+
+Contruct the URL for the specified route.
+
+Parameters:
+* `name`: Name of the route.
+* `params`: An object with route parameter keys and their values.
+* `options`: An object with options for this method. Valid keys are:
+  * `check`: Check whether the route exists, otherwise throw an exception. Default value: `false`.
+
+
+## Building layout and content data contexts
 
 TODO
 
