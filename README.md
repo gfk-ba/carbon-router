@@ -203,9 +203,25 @@ When breaking up your layout in several regions, you can pass the region name to
 Example using regions:
 ```html
 <template name="my_layout">
-  <div style="border: 1px solid black">{{> carbon__content region="top" yield=yield}}</div>
+  <div style="border: 1px solid black">{{> carbon__content region="header" yield=yield}}</div>
   <div style="background: red">{{> carbon__content}}</div>
 </template>
+```
+
+```javascript
+Router.add('my_page', '/page', {
+  layoutTemplate: 'my_template',
+  contentTemplate: {
+    _: 'my_main_content',
+    header: 'my_header'
+  },
+  contentData: function(data, region) {
+    switch (region) {
+      case header: return { x: 'Content data only passed to header.' };
+      default: return { y: 'Main content data only.' };
+    }
+  }
+});
 ```
 
 
