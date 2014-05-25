@@ -116,7 +116,7 @@ Parameters:
 
 #### `Router.goUrl(url)`
 
-Navigate to the specified URL. Make sure the URL is matched by one of the routes in the router.
+Navigate to the specified URL. Make sure the URL is matched by one of the routes in the router. If multiple routes will match the URL, then the order in which the routes are added to the router determines which route will be used; i.e. the route that is added first.
 
 Parameters:
 * `url`: URL string to navigate to. Can be specified both with or without the application origin and path prefix.
@@ -135,26 +135,88 @@ Parameters:
 
 ## Building layout and content data contexts
 
-TODO
+The data contexts for both the layout and content templates start out with the route parameters. This data is extended by the data in the configuration options of the router (respectively `layoutData` and `contentData`). Then this data is extended by the data from the route options `layoutData` and `contentData`.
+
+If a data function is used instead of an object for one of these configuration options, then the already existing data object that is constructed upto then is passed as the first argument and the return value should be an object by which the existing data is extended. Note that it is possible to override the values of existing data keys. In a data function it is also possible to delete keys from the existing data.
+
+### Examples
+
+```javascript
+Router.configure({
+  contentData: { a: 123, b: 456 }
+});
+
+// This route overrides the data key 'a':
+Router.add('override-a', '/example-a', {
+  contentData: { a: 'overridden' }
+});
+
+// There are several ways to override data keys using a data function:
+Router.add('override-b-1', '/example-b1'. {
+  contentData: function() {
+    return { b: 'overridden' };
+  }
+});
+
+Router.add('override-b-2', '/example-b2'. {
+  contentData: function(data) {
+    data.b = 'overridden';
+  }
+});
+```
 
 
 ## Customize layout
 
-TODO
+### Page layout
+
+The example usage at the top of this document shows the `carbon__layout` helper included in the `body` template. This inclusion is the starting point of carbon-router within the application. It is where the layout template configured in your route will be inserted. If needed the `carbon__layout` helper can be surrounded with some html or other templates that you want to have rendered always for each route (including the loading page and not-found page). It can even be placed in a different template, as the small example below demonstrates:
+
+```html
+<body>
+  <h1>For some reason I always want to see this header!</h1>
+  {{> layout_wrapper}}
+</body>
+
+<template name="layout_wrapper">
+  <div style="font-size: 2em">{{> carbon__layout}}</div>
+</template>
+```
+
+
+### Carbon layout
+
+When creating your own layout template, you can use the `carbon__content` template helper to indicate where the content is inserted, as long as you're using the default value `yield` for the router configuration `contentKey`. Always make sure the data context in which `carbon__content` is included contains the `yield` key.
+
+Example layout template:
+```html
+<template name="my_layout">
+  <div style="background: red">{{> carbon__content}}</div>
+</template>
+```
 
 
 ### Regions
 
-TODO
+When breaking up your layout in several regions, you can pass the region name to the `carbon__content` helper. But also pass `yield` in that case, as passing arguments will create a new data context.
+
+Example using regions:
+```html
+<template name="my_layout">
+  <div style="border: 1px solid black">{{> carbon__content region="top" yield=yield}}</div>
+  <div style="background: red">{{> carbon__content}}</div>
+</template>
+```
 
 
 ## Hooks
 
-TODO
+Hooks are configurable functions that will be run during predefined phases of the routing process.
+
 
 ### Before hook
 
-TODO
+The before hook is invoked before the rendering of the route layout when navigating to it. The route parameter values are passed in an object as the first argument.
 
 
 ## License
