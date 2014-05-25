@@ -3,7 +3,7 @@
   "description": "Lightweight client side router for Meteor",
   "homepage": "https://github.com/gfk-ba/carbon-router",
   "author": "Dave van Soest (https://github.com/tbknl)",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "git": "https://github.com/gfk-ba/carbon-router.git",
   "packages": {
   }
