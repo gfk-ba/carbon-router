@@ -32,7 +32,9 @@ Tinytest.add('#CarbonRouter - Construct URL for a route', function(test) {
     var router = new CarbonRouter();
     router.add('uno', '/uno', {});
     router.add('oneParam', '/prefix/{x}', {});
-    router.add('twoParams', '/prefix-{x}/{y}', {});
+    router.add('twoParams', '/prefix-{x}/{y}', {
+        paramDefaults: { y: 'default' }
+    });
     test.equal(router.url('uno'), '/uno', 'Unparametrized URL.');
     test.equal(router.url('oneParam', {x: 123}), '/prefix/123', 'URL with single parameter.');
     test.equal(router.url('twoParams', {y: 456, x: 123}), '/prefix-123/456', 'URL with multiple parameters.');
@@ -40,6 +42,11 @@ Tinytest.add('#CarbonRouter - Construct URL for a route', function(test) {
     test.throws(function() {
         router.url('invalid', {}, {check: true});
     });
+    test.equal(router.url('oneParam', {}), '', 'Omitting required parameter results in empty URL.');
+    test.throws(function() {
+        router.url('oneParam', {}, {check: true});
+    });
+    test.equal(router.url('twoParams', {x: 123}), '/prefix-123/default', 'Omitting optional parameter.');
 });
 
 

@@ -84,6 +84,7 @@ Parameters:
     * If it's a function, it can have two (optional) parameters `data` and `region`. The first contains data that will be passed in the data context. The second is a string identifying the content region the data is for.
   * `layoutTemplate`: Same as the `contentTemplate` option, but used for the layout template.
   * `layoutData`: Same as the `contentData` option, but used for the data context that is passed to the layout template.
+  * `paramDefaults`: Object containing default values for one or more route parameters. Parameters with default values are optional when constructing a URL for the route, the other parameters are required.
   * `before`: Before hook function, which is called before the layout for this route is rendered.
 
    
@@ -130,7 +131,7 @@ Parameters:
 * `name`: Name of the route.
 * `params`: An object with route parameter keys and their values.
 * `options`: An object with options for this method. Valid keys are:
-  * `check`: Check whether the route exists, otherwise throw an exception. Default value: `false`.
+  * `check`: Check whether the route exists and all required route parameters are provided, otherwise throw an exception. Default value: `false`.
 
 
 ## Building layout and content data contexts
