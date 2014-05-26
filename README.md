@@ -60,10 +60,10 @@ if (Meteor.isClient) {
 These are the methods of the global `CarbonRouter` instance called `Router`, which application developers generally need:
 
 * `Router.add`: Add a route to the router.
-* `Router.configure`: Update the router configuration. (TODO: Elaborate docs.)
-* `Router.go`: Navigate to the specified route. (TODO: Elaborate docs.)
-* `Router.goUrl`: Navigate to the specified URL. (TODO: Elaborate docs.)
-* `Router.url`: Generate the URL for the specified route. (TODO: Elaborate docs.)
+* `Router.configure`: Update the router configuration.
+* `Router.go`: Navigate to the specified route.
+* `Router.goUrl`: Navigate to the specified URL.
+* `Router.url`: Generate the URL for the specified route.
 
 These template helpers are available:
 
