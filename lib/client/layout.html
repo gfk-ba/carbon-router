@@ -1,39 +1,62 @@
-<template name="carbon__layout">
-    {{#with _layout}}
-        {{#with data}}
-            {{> ../template}}
-        {{/with}}
+<template name="carbon__region">
+    {{#with getRegion region}}
+    	{{#if ../layout}}
+	    {{> carbon__region_layout}}
+	{{else}}
+	    {{> carbon__region_other}}
+	{{/if}}
     {{/with}}
+</template>
+
+
+<template name="carbon__region_layout">
+    {{#with data}}
+        {{> ../template}}
+    {{/with}}
+</template>
+
+
+<template name="carbon__region_other">
+    {{#with data}}
+        {{> ../template}}
+    {{/with}}
+</template>
+
+
+<template name="carbon__default_content">
 </template>
 
 
 <template name="carbon__default_layout">
-    {{> carbon__content}}
+    {{> carbon__region region='content'}}
+</template>
+
+
+<template name="carbon__layout">
+    {{! DEPRECATED! Will be removed with next minor version update.}}
+    {{> carbon__region region='layout' layout=true}}
 </template>
 
 
 <template name="carbon__content">
-    {{#with yield}}
-        {{#with template ../region}}
-            {{#with ../data ../../region}}
-                {{> ..}}
-            {{/with}}
-        {{/with}}
-    {{/with}}
+    {{! DEPRECATED! Will be removed with next minor version update.}}
+    {{#if region}}
+        {{> carbon__region region=region}}
+    {{else}}
+        {{> carbon__region region='content'}}
+    {{/if}}
 </template>
 
 
 <template name="carbon__default_loading">
+    {{! DEPRECATED! Will be removed with next minor version update.}}
     <h1>Loading...</h1>
 </template>
 
 
 <template name="carbon__default_not_found">
+    {{! DEPRECATED! Will be removed with next minor version update.}}
     <h1>Not found...</h1>
-</template>
-
-
-<template name="carbon__default_content">
 </template>
 
 
