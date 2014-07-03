@@ -4,6 +4,9 @@
 
 An alternative, lightweight, modular, customizable client side router for Meteor.
 
+Carbon-router is designed to be flexible and easy-to-use, focusing only on what a router needs to do. Excluded from the responsibility of the router is the handling of subscriptions, because we feel this goes against the philosophy of Meteor. Subscriptions are better handled in the template helpers, where their data is actually used.
+
+
 
 ## Installation
 
@@ -12,12 +15,45 @@ mrt add carbon-router
 ```
 
 
+## Upgrading
+
+### From 0.0.10 to 0.1.0
+
+* The CarbonRouter architecture has changed, making regions first-class.
+* The route options and Router configuration key for `contentTemplate`, `contentData`, `layoutTemplate` and `layoutData` made place for the `regions` key. Converting to the new way should be trivial. An example:
+```javascript
+// Old situation:
+{
+    layoutTemplate: 'my_layout',
+    layoutData: y,
+    contentTemplate: 'my_content',
+    contentData: x
+}
+
+// New situation:
+{
+    regions: {
+        layout: {
+            template: 'my_layout',
+            data: y
+        },
+        content: {
+            template: 'my_content',
+            data: x
+        }
+    }
+}
+```
+* The template placeholders `{{> carbon__layout}}` and `{{> carbon__content}}` are now DEPRECATED and will be removed in the next minor version. They are replaced with `{{> carbon__region region='<region_name>' layout=<is_layout>}}`, where `<region_name>` is `layout`, `content` or the name of another defined region and `<is_layout>` is a boolean indicating whether the region is a layout region (default: `false`).
+* The concept of content-key/yield is no longer used.
+
+
 ## Example usage
 
 Very simple example, using mostly default settings:
 
 ```html
-<body>{{> carbon__layout}}</body>
+<body>{{> carbon__region region='content' layout=true}}</body>
 
 <template name="hello">
   <h1>Hello {{audience}}</h1>
@@ -35,14 +71,22 @@ Very simple example, using mostly default settings:
 ```javascript
 if (Meteor.isClient) {
   Router.add('hello', '/', {
-    contentTemplate: 'hello',
-    contentData: {audience: 'world'}
+    regions: {
+      content: {
+        template: 'hello',
+        data: {audience: 'world'}
+      }
+    }
   });
   
   Router.add('item', '/item/{itemId}', {
-    contentTemplate: 'item',
-    contentData: function(data) {
-      return {item: items[data.itemId]};
+    regions: {
+      content: {
+        template: 'item',
+        data: function(data) {
+          return {item: items[data.itemId]};
+        }
+      }
     }
   });
   
@@ -60,10 +104,10 @@ if (Meteor.isClient) {
 These are the methods of the global `CarbonRouter` instance called `Router`, which application developers generally need:
 
 * `Router.add`: Add a route to the router.
-* `Router.configure`: Update the router configuration.
-* `Router.go`: Navigate to the specified route.
-* `Router.goUrl`: Navigate to the specified URL.
-* `Router.url`: Generate the URL for the specified route.
+* `Router.configure`: Update the router configuration. (TODO: Elaborate docs.)
+* `Router.go`: Navigate to the specified route. (TODO: Elaborate docs.)
+* `Router.goUrl`: Navigate to the specified URL. (TODO: Elaborate docs.)
+* `Router.url`: Generate the URL for the specified route. (TODO: Elaborate docs.)
 
 These template helpers are available:
 
@@ -77,13 +121,11 @@ Parameters:
 * `name`: Unique name of the route.
 * `url`: Route URL. It can contain parameters within curly braces.
 * `options`: An object with options for this route. Valid option keys are:
-  * `contentTemplate`: Either:
-    * Name of the template to use for the page content.
-    * An object, where the keys are the names of the content regions and the values the names of the templates for those regions.
-  * `contentData`: Can either be an object or a function returning an object. The result is merged with the data context that is passed to the content template.
-    * If it's a function, it can have two (optional) parameters `data` and `region`. The first contains data that will be passed in the data context. The second is a string identifying the content region the data is for.
-  * `layoutTemplate`: Same as the `contentTemplate` option, but used for the layout template.
-  * `layoutData`: Same as the `contentData` option, but used for the data context that is passed to the layout template.
+  * `regions`: An object which keys are region names and the values are objects with the region configuration (template and data).
+    * The region configuration can have two keys:
+      * `template`: Name of the template for this region. Will override any template specified for this region in the router configuration.
+      * `data`: Can either be an object or a function returning an object. The result is merged with the data context that is passed to the template.
+        * If it's a function, it can have two (optional) parameters `data` and `region`. The first contains data that will be passed in the data context. The second is a string identifying the content region the data is for.
   * `paramDefaults`: Object containing default values for one or more route parameters. Parameters with default values are optional when constructing a URL for the route, the other parameters are required.
   * `before`: Before hook function, which is called before the layout for this route is rendered.
 
@@ -94,15 +136,7 @@ Change the configuration options of the router. It's recommended to use this onl
 
 Parameters:
 * `config`: An object with the configuration changes. Valid keys are:
-  * `layoutTemplate`: Name of the layout template to use if no layout template is specified for the route itself.
-  * `layoutData`: Layout data object or function returning an object, works the same as the `layoutData` option of `Router.add`. This layout-data is not overridden by the layout-data specified for the route, but it's extended by the layout-data of the route.
-  * `contentTemplate`: Name of the content template to use if no content template is specified for the route itself.
-  * `contentData`: Same as `layoutData`, only then for the content data.
-  * `loading`: Object describing the template to use when showing the loading page. It contains two keys:
-    * `layoutTemplate`: Name of the layout template to use. If not specified, the default layout template of the router is used.
-    * `contentTemplate`: Name of the content template to use.
-  * `notFound`: Same as the `loading` option, only then for the page-no-found template.
-  * `contentKey`: The data key that is used to pass the content template and data in the context of the layout template. The default value is `yield`.
+  * `regions`: See the regions option in `Router.add(...)`.
   * `autoLoad`: A boolean option indicating whether to automatically load the route corresponding to the current URL on startup. Default value: `true`.
 
 
@@ -134,9 +168,15 @@ Parameters:
   * `check`: Check whether the route exists and all required route parameters are provided, otherwise throw an exception. Default value: `false`.
 
 
-## Building layout and content data contexts
+#### `Router.current()`
 
-The data contexts for both the layout and content templates start out with the route parameters. This data is extended by the data in the configuration options of the router (respectively `layoutData` and `contentData`). Then this data is extended by the data from the route options `layoutData` and `contentData`.
+Return the current controller. Will return the same controller instance as long as the router has not switched to a different route. This method uses a reactive data source, which will trigger a re-computation after the current route is switched.
+
+
+
+## Assembling region data contexts
+
+The data contexts for region templates start out with the controller status (either 'found', 'not\_found' or 'loading') and route parameters. This data is extended by the data in the configuration options of the router (respectively `layoutData` and `contentData`). Then this data is extended by the data from the route options `layoutData` and `contentData`.
 
 If a data function is used instead of an object for one of these configuration options, then the already existing data object that is constructed upto then is passed as the first argument and the return value should be an object by which the existing data is extended. Note that it is possible to override the values of existing data keys. In a data function it is also possible to delete keys from the existing data.
 
@@ -144,24 +184,32 @@ If a data function is used instead of an object for one of these configuration o
 
 ```javascript
 Router.configure({
-  contentData: { a: 123, b: 456 }
+  regions: {
+    regionX: { a: 123, b: 456 }
+  }
 });
 
 // This route overrides the data key 'a':
 Router.add('override-a', '/example-a', {
-  contentData: { a: 'overridden' }
+  regions: {
+    regionX: { a: 'overridden' }
+  }
 });
 
 // There are several ways to override data keys using a data function:
 Router.add('override-b-1', '/example-b1'. {
-  contentData: function() {
-    return { b: 'overridden' };
+  regions: {
+    regionX: function() {
+      return { b: 'overridden' };
+    }
   }
 });
 
 Router.add('override-b-2', '/example-b2'. {
-  contentData: function(data) {
-    data.b = 'overridden';
+  regions: {
+    regionX: function() {
+      data.b = 'overridden';
+    }
   }
 });
 ```
@@ -171,7 +219,7 @@ Router.add('override-b-2', '/example-b2'. {
 
 ### Page layout
 
-The example usage at the top of this document shows the `carbon__layout` helper included in the `body` template. This inclusion is the starting point of carbon-router within the application. It is where the layout template configured in your route will be inserted. If needed the `carbon__layout` helper can be surrounded with some html or other templates that you want to have rendered always for each route (including the loading page and not-found page). It can even be placed in a different template, as the small example below demonstrates:
+The example usage at the top of this document shows the `carbon__region` helper included in the `body` template. This inclusion is the starting point of carbon-router within the application. It is where the layout template configured in your route will be inserted. If needed the `carbon__region` helper can be surrounded with some html or other templates that you want to have rendered always for each route. It can even be placed in a different template, as the small example below demonstrates:
 
 ```html
 <body>
@@ -180,49 +228,23 @@ The example usage at the top of this document shows the `carbon__layout` helper 
 </body>
 
 <template name="layout_wrapper">
-  <div style="font-size: 2em">{{> carbon__layout}}</div>
+  <div style="font-size: 2em">{{> carbon__region region='layout' layout=true}}</div>
 </template>
 ```
 
+Note the `layout=true` parameter passed to the `carbon__region` helper. It indicates that this region is a layout region, causing the click events on anchor tags inside to be captured and handled by the router.
 
-### Carbon layout
 
-When creating your own layout template, you can use the `carbon__content` template helper to indicate where the content is inserted, as long as you're using the default value `yield` for the router configuration `contentKey`. Always make sure the data context in which `carbon__content` is included contains the `yield` key.
+### Layout templates
+
+When creating your own layout template, you can use the `carbon__region` template helper to indicate where the content regions are inserted.
 
 Example layout template:
 ```html
 <template name="my_layout">
-  <div style="background: red">{{> carbon__content}}</div>
+  <div class="sidebar" style="background: red">{{> carbon__region region='sidebar'}}</div>
+  <div class="main" style="background: red">{{> carbon__region region='main_content'}}</div>
 </template>
-```
-
-
-### Regions
-
-When breaking up your layout in several regions, you can pass the region name to the `carbon__content` helper. But also pass `yield` in that case, as passing arguments will create a new data context.
-
-Example using regions:
-```html
-<template name="my_layout">
-  <div style="border: 1px solid black">{{> carbon__content region="header" yield=yield}}</div>
-  <div style="background: red">{{> carbon__content}}</div>
-</template>
-```
-
-```javascript
-Router.add('my_page', '/page', {
-  layoutTemplate: 'my_template',
-  contentTemplate: {
-    _: 'my_main_content',
-    header: 'my_header'
-  },
-  contentData: function(data, region) {
-    switch (region) {
-      case header: return { x: 'Content data only passed to header.' };
-      default: return { y: 'Main content data only.' };
-    }
-  }
-});
 ```
 
 

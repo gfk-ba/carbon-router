@@ -1,95 +1,54 @@
 
-Tinytest.add('#CarbonController - Content data is merged', function(test) {
-    var controller = new CarbonController('yield');
-    controller.defaultContentTemplate = 'dummy';
-    controller.addContentData({x: 123, y: 456});
-    controller.addContentData({y: 'overridden', z: 789, a: 'A'});
+Tinytest.add('#CarbonController - Region data is merged', function(test) {
+    var controller = new CarbonController();
+    controller.setRegionTemplate('region1', 'dummy')
+    controller.addRegionData('region1', {x: 123, y: 456});
+    controller.addRegionData('region1', {y: 'overridden', z: 789, a: 'A'});
+    controller.addRegionData('region2', {x: 456});
     controller.params = {a: 'param', b: 'param2'};
 
-    var contentData = controller.getContentTemplateAndData().data();
-    test.equal(contentData.x, 123, 'Non-overridden data is still available.');
-    test.equal(contentData.y, 'overridden', 'Data is overridden when merging the same key.');
-    test.equal(contentData.z, 789, 'New keys are merged with existing data.');
-    test.equal(contentData.a, 'A', 'Parameter is overridden by data.');
-    test.equal(contentData.b, 'param2', 'Non-overridden paramaters are available in data.');
+    var region1Data = controller.getRegionTemplateAndData('region1').data();
+    test.equal(region1Data.x, 123, 'Non-overridden data is still available.');
+    test.equal(region1Data.y, 'overridden', 'Data is overridden when merging the same key.');
+    test.equal(region1Data.z, 789, 'New keys are merged with existing data.');
+    test.equal(region1Data.a, 'A', 'Parameter is overridden by data.');
+    test.equal(region1Data.b, 'param2', 'Non-overridden paramaters are available in data.');
+    test.equal(region1Data.carbon_status, CarbonController.STATUS.FOUND, 'Data key carbon_status is always available and defaults to "' + CarbonController.STATUS.FOUND + '".');
+
+    var region2Data = controller.getRegionTemplateAndData('region2').data();
+    test.equal(region2Data.a, 'param', 'Parameter is not overridden for second region.');
+    test.equal(region2Data.x, 456, 'Data for also available for second region.');
 });
 
 
-Tinytest.add('#CarbonController - Layout data is merged', function(test) {
-    var contentKey = 'test123';
-    var controller = new CarbonController(contentKey);
-    controller.defaultContentTemplate = 'dummy';
-    controller.addLayoutData({x: 123, y: 456});
-    controller.addLayoutData({y: 'overridden', z: 789, a: 'A'});
-    controller.params = {a: 'param'};
-    controller.params[contentKey] = 'will_be_overridden';
-    controller.addContentData({c: 123});
-
-    var layoutData = controller.getLayoutTemplateAndData().data();
-    test.equal(layoutData.x, 123, 'Non-overridden data is still available.');
-    test.equal(layoutData.y, 'overridden', 'Data is overridden when merging the same key.');
-    test.equal(layoutData.z, 789, 'New keys are merged with existing data.');
-    test.equal(layoutData.a, 'A', 'Parameter is overridden by data.');
-
-    var contentData = layoutData[contentKey].data();
-    test.equal(contentData.c, 123, 'Content data is available under content key in layout data.');
-});
-
-
-Tinytest.add('#CarbonController - Get content template for region', function(test) {
+Tinytest.add('#CarbonController - Region templates', function(test) {
     Template['abc'] = 'TestTemplate';
     Template['xyz'] = 'TestTemplate-some_region';
 
-    var contentTemplate = null;
+    var regionTemplate = null;
 
-    var contentKey = 'test123';
-    var controller = new CarbonController(contentKey);
+    var controller = new CarbonController();
+    controller.setRegionTemplate('region1', 'abc');
 
-    controller.contentTemplate = 'abc';
-    contentTemplate = controller.getContentTemplateAndData().template();
-    test.equal(contentTemplate, Template['abc'], 'Template name defined as string returns the indicated template.');
+    regionTemplate = controller.getRegionTemplateAndData('region1').template;
+    test.equal(regionTemplate, Template['abc'], 'Template name defined as string returns the indicated template for "region1".');
 
-    test.throws(function() {
-        var dummy = controller.getContentTemplateAndData().template('some_region');
-    });
-
-
-    controller.contentTemplate = {
-        _: 'abc',
-        'some_region': 'xyz'
-    };
-    contentTemplate = controller.getContentTemplateAndData().template();
-    test.equal(contentTemplate, Template['abc'], 'Unspecified region returns template for default region.');
-    contentTemplate = controller.getContentTemplateAndData().template('some_region');
-    test.equal(contentTemplate, Template['xyz'], 'Specified region returns template for that region.');
-    contentTemplate = controller.getContentTemplateAndData().template('invalid_region');
-    test.isNull(contentTemplate, 'Invalid region returns no template.');
+    controller.setRegionTemplate('region2', 'xyz');
+    regionTemplate = controller.getRegionTemplateAndData('region2').template;
+    test.equal(regionTemplate, Template['xyz'], 'Template name defined as string returns the indicated template for "region2".');
+    regionTemplate = controller.getRegionTemplateAndData('non_existing_region').template;
+    test.isUndefined(regionTemplate, 'Template for non-existing region is "undefined".');
 });
 
 
-Tinytest.add('#CarbonController - Get content data for region', function(test) {
-    var contentData = null;
-
-    var contentKey = 'test123';
-    var controller = new CarbonController(contentKey);
-    controller.contentTemplate = {
-        _: 'abc',
-        some_region: 'xyz'
+Tinytest.add('#CarbonController - Before hook', function(test) {
+    var controller = new CarbonController();
+    var beforeFuncIsCalled = false;
+    var beforeFunc = function() {
+        beforeFuncIsCalled = true;
     };
-
-    controller.addContentData({x: 123});
-    contentData = controller.getContentTemplateAndData().data();
-    test.equal(contentData.x, 123, 'Unspecified region returns all data.');
-    contentData = controller.getContentTemplateAndData().data('some_region');
-    test.equal(contentData.x, 123, 'Specified region returns all data if no data function used.');
-
-    controller.addContentData(function(data, region) {
-        return { region: region };
-    });
-    contentData = controller.getContentTemplateAndData().data();
-    test.equal(contentData.region, undefined, 'Unspecified region is passed as undefined.');
-    contentData = controller.getContentTemplateAndData().data('some_region');
-    test.equal(contentData.region, 'some_region', 'Specified region is passed to data function.');
+    controller.setBeforeHook(beforeFunc);
+    controller.callBeforeHook();
+    test.isTrue(beforeFuncIsCalled, 'The before hook function is called.');
 });
-
 
