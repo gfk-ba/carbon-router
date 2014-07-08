@@ -92,6 +92,7 @@ Tinytest.add('#CarbonRouter - Go to URL and test current controller', function(t
     });
     router.add('twoParams', '/prefix-{x}/{y}', {
         regions: {
+            layout: { data: {} },
             content: { template: 'tpl_twoParams' }
         }
     });
