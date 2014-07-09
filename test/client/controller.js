@@ -37,7 +37,7 @@ Tinytest.add('#CarbonController - Region templates', function(test) {
     regionTemplate = controller.getRegionTemplateAndData('region2').template;
     test.equal(regionTemplate, Template['xyz'], 'Template name defined as string returns the indicated template for "region2".');
     regionTemplate = controller.getRegionTemplateAndData('non_existing_region').template;
-    test.isUndefined(regionTemplate, 'Template for non-existing region is "undefined".');
+    test.isNull(regionTemplate, 'Template for non-existing region is "undefined".');
 });
 
 
