@@ -136,6 +136,37 @@ Tinytest.add('#CarbonRouter - Go to URL and test current controller', function(t
     test.equal(layout.data().carbon_status, CarbonController.STATUS.NOT_FOUND, 'Layout region data carbon_status "' + CarbonController.STATUS.NOT_FOUND + '" for invalid url path.');
 });
 
+Tinytest.add('#CarbonRouter - Options for current() method.', function(test) {
+    var router = new CarbonRouter();
+    router.add('uno', '/uno', {});
+    router.add('due', '/due', {});
+
+    // Test reactive call to current():
+    var reactiveRecomputeCount = 0;
+    var computation1 = Deps.autorun(function() {
+        var controller = router.current();
+        reactiveRecomputeCount += 1;
+    });
+    router.go('uno');
+    Deps.flush();
+    test.equal(reactiveRecomputeCount, 2, 'Call to CarbonRouter.current() reactively invalidates computation.');
+
+    // Test non-reactive call to current():
+    var nonReactiveRecomputeCount = 0;
+    var computation2 = Deps.autorun(function() {
+        var controller = router.current({nonReactive: true});
+        nonReactiveRecomputeCount += 1;
+    });
+    router.go('due');
+    Deps.flush();
+    test.equal(nonReactiveRecomputeCount, 1, 'Call to CarbonRouter.current() does not reactively invalidate computation if nonReactive option is set.');
+    test.equal(reactiveRecomputeCount, 3, 'Call to CarbonRouter.current() reactively invalidates computation.');
+
+    // Clean up computations:
+    computation1.stop();
+    computation2.stop();
+});
+
 
 Tinytest.add('#CarbonRouter - Before hook', function(test) {
     var router = new CarbonRouter();

@@ -1,5 +1,5 @@
 <template name="carbon__region">
-    {{#with getRegion region}}
+    {{#with getRegion region ..}}{{! NOTE: Parent context is used here solely to force Meteor to re-render this template.}}
     	{{#if ../layout}}
 	    {{> carbon__region_layout}}
 	{{else}}
@@ -10,9 +10,7 @@
 
 
 <template name="carbon__region_layout">
-    {{#with data}}
-        {{> ../template}}
-    {{/with}}
+    {{> carbon__region_other}}
 </template>
 
 

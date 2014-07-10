@@ -168,10 +168,13 @@ Parameters:
   * `check`: Check whether the route exists and all required route parameters are provided, otherwise throw an exception. Default value: `false`.
 
 
-#### `Router.current()`
+#### `Router.current(options)`
 
 Return the current controller. Will return the same controller instance as long as the router has not switched to a different route. This method uses a reactive data source, which will trigger a re-computation after the current route is switched.
 
+Parameters:
+* `options`: Object with options:
+  * `nonReactive`: Boolean indicating whether the function should work reactively. Default: `false`.
 
 
 ## Assembling region data contexts
