@@ -1,22 +1,27 @@
 Package.describe({
-    summary: 'CarbonRouter - An alternative, lightweight, modular client side router for Meteor'
+    summary: 'CarbonRouter - An alternative, lightweight, modular client side router for Meteor',
+    version: "0.1.3",
+    name: "mrt:carbon-router",
+    git: "https://github.com/gfk-ba/carbon-router.git"
 });
 
 
-Package.on_use(function (api) {
+Package.onUse(function (api) {
+    api.versionsFrom('0.9.0');
+
     api.use('underscore', 'client');
     api.use('templating', 'client');
     api.use('ui', 'client');
     api.use('session', 'client');
 
-    api.add_files('lib/util.js', 'client');
+    api.addFiles('lib/util.js', 'client');
 
-    api.add_files('lib/client/layout.html', 'client');
-    api.add_files('lib/client/util.js', 'client');
-    api.add_files('lib/client/controller.js', 'client');
-    api.add_files('lib/client/router.js', 'client');
-    api.add_files('lib/client/template.js', 'client');
-    api.add_files('lib/client/app.js', 'client');
+    api.addFiles('lib/client/layout.html', 'client');
+    api.addFiles('lib/client/util.js', 'client');
+    api.addFiles('lib/client/controller.js', 'client');
+    api.addFiles('lib/client/router.js', 'client');
+    api.addFiles('lib/client/template.js', 'client');
+    api.addFiles('lib/client/app.js', 'client');
 
     api.export('Router', 'client');
 
@@ -26,12 +31,12 @@ Package.on_use(function (api) {
 });
 
 
-Package.on_test(function (api) {
-    api.use('carbon-router', ['client', 'server']);
+Package.onTest(function (api) {
+    api.use('mrt:carbon-router', ['client', 'server']);
     api.use('tinytest', ['client', 'server']);
 
-    api.add_files('test/util.js', 'client');
-    api.add_files('test/client/controller.js', 'client');
-    api.add_files('test/client/router.js', 'client');
+    api.addFiles('test/util.js', 'client');
+    api.addFiles('test/client/controller.js', 'client');
+    api.addFiles('test/client/router.js', 'client');
 });
 
