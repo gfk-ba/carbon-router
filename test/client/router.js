@@ -170,7 +170,7 @@ Tinytest.add('#CarbonRouter - Options for current() method.', function(test) {
 
 Tinytest.add('#CarbonRouter - Before hook', function(test) {
     var router = new CarbonRouter();
-    var beforeHookIsCalled = false;
+    var beforeHookCallCount = 0;
     var parameterIsPassedToBeforeHook = false;
 
     router.add('testbeforehook', '/{x}', {
@@ -178,16 +178,18 @@ Tinytest.add('#CarbonRouter - Before hook', function(test) {
             content: { template: 'tpl_test' }
         },
         before: function(params) {
-            beforeHookIsCalled = true;
+            beforeHookCallCount += 1;
             parameterIsPassedToBeforeHook = params.x === '123';
         }
     });
 
     router.goUrl('/123');
     controller = router.current();
-    controller.callBeforeHook();
-    test.isTrue(beforeHookIsCalled, 'Before hook is run.');
+    test.equal(beforeHookCallCount, 1, 'Before hook is run.');
     test.isTrue(parameterIsPassedToBeforeHook, 'Parameter is passed to before hook.');
+
+    controller = router.current();
+    test.equal(beforeHookCallCount, 1, 'Before hook is run only once.');
 });
 
 

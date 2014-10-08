@@ -1,6 +1,6 @@
 Package.describe({
     summary: 'CarbonRouter - An alternative, lightweight, modular client side router for Meteor',
-    version: "0.1.3",
+    version: "0.1.4",
     name: "mrt:carbon-router",
     git: "https://github.com/gfk-ba/carbon-router.git"
 });
