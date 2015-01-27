@@ -10,6 +10,7 @@ Tinytest.add('#CarbonRouter - Default configuration values', function(test) {
     var router = new CarbonRouter();
     router.configure({});
     test.equal(router.getConfig('autoLoad'), true, 'Default config value for autoLoad is true.');
+    test.equal(router.getConfig('linkSelector'), 'a', 'Default config value for linkSelector is a.');
 
     var regionsConfig = router.getConfig('regions');
     test.equal(regionsConfig.layout.template, 'carbon__default_layout', 'Default config value for layout region template.');
@@ -30,6 +31,23 @@ Tinytest.add('#CarbonRouter - Add and match routes', function(test) {
     test.isNotNull(router.matchUrl('/prefix/123'), 'Use single parameter.');
     test.isNotNull(router.matchUrl('/prefix-123/456'), 'Use multiple parameters.');
     test.isNull(router.matchUrl('/prefix-/456'), 'Empty parameter value does not match.');
+});
+
+Tinytest.add('#CarbonRouter - Add default template events', function(test) {
+    var router = new CarbonRouter();
+
+    // TinyTest isFunction failing
+    test.isTrue(_.isFunction(Template.carbon__region_layout.events['click a']), 'Default event handler has not been created');
+});
+
+Tinytest.add('#CarbonRouter - Change template events', function(test) {
+    var router = new CarbonRouter();
+
+    router.configure({linkSelector: 'a:not(skip-router)'});
+
+    test.isUndefined(Template.carbon__region_layout.events['click a'], 'Old event handler has not been removed');
+    // TinyTest isFunction failing
+    test.isTrue(_.isFunction(Template.carbon__region_layout.events['click a:not(skip-router)']), 'New event handler has not been created');
 });
 
 
@@ -189,5 +207,3 @@ Tinytest.add('#CarbonRouter - Before hook', function(test) {
     test.isTrue(beforeHookIsCalled, 'Before hook is run.');
     test.isTrue(parameterIsPassedToBeforeHook, 'Parameter is passed to before hook.');
 });
-
-

@@ -39,4 +39,3 @@ Package.onTest(function (api) {
     api.addFiles('test/client/controller.js', 'client');
     api.addFiles('test/client/router.js', 'client');
 });
-
