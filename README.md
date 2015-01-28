@@ -2,7 +2,7 @@
 
 # Carbon-router
 
-An alternative, lightweight, modular, customizable client side router for Meteor.
+An alternative, lightweight, modular, customisable client side router for Meteor.
 
 Carbon-router is designed to be flexible and easy-to-use, focusing only on what a router needs to do. Excluded from the responsibility of the router is the handling of subscriptions, because we feel this goes against the philosophy of Meteor. Subscriptions are better handled in the template helpers, where their data is actually used.
 
@@ -11,42 +11,8 @@ Carbon-router is designed to be flexible and easy-to-use, focusing only on what 
 ## Installation
 
 ```
-mrt add carbon-router
+meteor add gfk:carbon-router
 ```
-
-
-## Upgrading
-
-### From 0.0.10 to 0.1.0
-
-* The CarbonRouter architecture has changed, making regions first-class.
-* The route options and Router configuration key for `contentTemplate`, `contentData`, `layoutTemplate` and `layoutData` made place for the `regions` key. Converting to the new way should be trivial. An example:
-```javascript
-// Old situation:
-{
-    layoutTemplate: 'my_layout',
-    layoutData: y,
-    contentTemplate: 'my_content',
-    contentData: x
-}
-
-// New situation:
-{
-    regions: {
-        layout: {
-            template: 'my_layout',
-            data: y
-        },
-        content: {
-            template: 'my_content',
-            data: x
-        }
-    }
-}
-```
-* The template placeholders `{{> carbon__layout}}` and `{{> carbon__content}}` are now DEPRECATED and will be removed in the next minor version. They are replaced with `{{> carbon__region region='<region_name>' layout=<is_layout>}}`, where `<region_name>` is `layout`, `content` or the name of another defined region and `<is_layout>` is a boolean indicating whether the region is a layout region (default: `false`).
-* The concept of content-key/yield is no longer used.
-
 
 ## Example usage
 
@@ -78,7 +44,7 @@ if (Meteor.isClient) {
       }
     }
   });
-  
+
   Router.add('item', '/item/{itemId}', {
     regions: {
       content: {
@@ -89,9 +55,9 @@ if (Meteor.isClient) {
       }
     }
   });
-  
+
   var items = { foo: {name: 'Foo'}, bar: {name: 'Bar!'} }; // Example data.
-  
+
   Template.hello.itemIds = function() { return _.keys(items); };
 }
 ```
@@ -129,7 +95,7 @@ Parameters:
   * `paramDefaults`: Object containing default values for one or more route parameters. Parameters with default values are optional when constructing a URL for the route, the other parameters are required.
   * `before`: Before hook function, which is called before the layout for this route is rendered.
 
-   
+
 #### `Router.configure(config)`
 
 Change the configuration options of the router. It's recommended to use this only during the initialization phase of the application (i.e. before `Meteor.startup` functions are run).
@@ -261,7 +227,39 @@ Hooks are configurable functions that will be run during predefined phases of th
 The before hook is invoked before the rendering of the route layout when navigating to it. The route parameter values are passed in an object as the first argument.
 
 
+
+## Upgrading
+
+### From 0.0.10 to 0.1.0
+
+* The CarbonRouter architecture has changed, making regions first-class.
+* The route options and Router configuration key for `contentTemplate`, `contentData`, `layoutTemplate` and `layoutData` made place for the `regions` key. Converting to the new way should be trivial. An example:
+```javascript
+// Old situation:
+{
+    layoutTemplate: 'my_layout',
+    layoutData: y,
+    contentTemplate: 'my_content',
+    contentData: x
+}
+
+// New situation:
+{
+    regions: {
+        layout: {
+            template: 'my_layout',
+            data: y
+        },
+        content: {
+            template: 'my_content',
+            data: x
+        }
+    }
+}
+```
+* The template placeholders `{{> carbon__layout}}` and `{{> carbon__content}}` are now DEPRECATED and will be removed in the next minor version. They are replaced with `{{> carbon__region region='<region_name>' layout=<is_layout>}}`, where `<region_name>` is `layout`, `content` or the name of another defined region and `<is_layout>` is a boolean indicating whether the region is a layout region (default: `false`).
+* The concept of content-key/yield is no longer used.
+
 ## License
 
 MIT
-
