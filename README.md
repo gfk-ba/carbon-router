@@ -104,6 +104,7 @@ Parameters:
 * `config`: An object with the configuration changes. Valid keys are:
   * `regions`: See the regions option in `Router.add(...)`.
   * `autoLoad`: A boolean option indicating whether to automatically load the route corresponding to the current URL on startup. Default value: `true`.
+  * `greedy`: A boolean option indicating whether to catch all url changes on the matched elements or only the elements with a href that points to a route known to the router. Default value: `false`
 
 
 #### `Router.go(name, params)`

@@ -26,6 +26,7 @@ Package.onUse(function (api) {
     api.export('Router', 'client');
 
     api.export('Util', 'client', {testOnly: true});
+    api.export('ClientUtil', 'client', {testOnly: true});
     api.export('CarbonController', 'client', {testOnly: true});
     api.export('CarbonRouter', 'client', {testOnly: true});
 });
@@ -33,7 +34,7 @@ Package.onUse(function (api) {
 
 Package.onTest(function (api) {
     api.use('gfk:carbon-router', ['client', 'server']);
-    api.use('tinytest', ['client', 'server']);
+    api.use(['tinytest', 'practicalmeteor:munit@2.1.2', 'underscore'], ['client', 'server']);
 
     api.addFiles('test/util.js', 'client');
     api.addFiles('test/client/controller.js', 'client');

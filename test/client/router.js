@@ -209,3 +209,108 @@ Tinytest.add('#CarbonRouter - Before hook', function(test) {
     controller = router.current();
     test.equal(beforeHookCallCount, 1, 'Before hook is run only once.');
 });
+
+
+describe('#CarbonRouter', function () {
+    var sandbox, router, fakeClickEvent;
+
+
+    beforeEach(function () {
+        if (sandbox) {
+            sandbox.restore();
+        }
+
+        sandbox = sinon.sandbox.create();
+
+        router = new CarbonRouter();
+
+        router.configure({
+            regions: {
+                layout: {
+                    template: 'tpl_global_layout',
+                }
+            }
+        });
+
+        router.add('uno', '/uno', {
+            regions: {
+                content: { template: 'tpl_uno' }
+            }
+        });
+        router.add('oneParam', '/prefix/{x}', {
+            regions: {
+                content: { template: 'tpl_oneParam' },
+                layout: { template: 'tpl_private_layout' }
+            }
+        });
+        router.add('twoParams', '/prefix-{x}/{y}', {
+            regions: {
+                layout: { data: {} },
+                content: { template: 'tpl_twoParams' }
+            }
+        });
+        fakeClickEvent = {
+            currentTarget: {
+                href: ClientUtil.getOrigin() + 'prefix-1/2',
+                pathname: '/prefix-1/2'
+            },
+            preventDefault: sandbox.stub()
+        }
+
+    })
+    describe('#handleClick', function () {
+        describe('When router configured to greedy', function () {
+            it('Should allow default behaviour', function () {
+                fakeClickEvent.currentTarget.href = 'http://www.google.nl';
+                router.handleClick(fakeClickEvent);
+                expect(fakeClickEvent.preventDefault).to.not.have.been.called;
+            });
+
+            describe('When href is relative', function () {
+                it('Should prevent default behaviour of the given event', function () {
+                    router.handleClick(fakeClickEvent);
+                    expect(fakeClickEvent.preventDefault).to.have.been.calledOnce;
+                });
+
+                it('Should call goUrl with the href', function () {
+                    sandbox.stub(router, 'goUrl');
+                    router.handleClick(fakeClickEvent);
+                    expect(router.goUrl).to.have.been.calledWith(fakeClickEvent.currentTarget.href);
+                });
+            });
+        });
+
+        describe('When router configured to not greedy', function () {
+            it('Should allow default behaviour', function () {
+                router.configure({
+                    greedy: false
+                });
+
+                console.log(router.getConfig('greedy'));
+
+                fakeClickEvent.currentTarget.href = ClientUtil.getOrigin() + 'somethingNot/routed';
+                fakeClickEvent.currentTarget.pathname = '/somethingNot/routed'
+
+                router.handleClick(fakeClickEvent);
+                expect(fakeClickEvent.preventDefault).to.not.have.been.called;
+            });
+
+            describe('When given route is configured', function () {
+                it('Should call goUrl with the href', function () {
+                    router.configure({
+                        regions: {
+                            layout: {
+                                template: 'tpl_global_layout',
+                            }
+                        },
+                        greedy: false
+                    });
+
+                    sandbox.stub(router, 'goUrl');
+                    router.handleClick(fakeClickEvent);
+                    expect(router.goUrl).to.have.been.calledWith(fakeClickEvent.currentTarget.href);
+                });
+            });
+        });
+    });
+});
