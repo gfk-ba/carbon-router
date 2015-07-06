@@ -1,5 +1,8 @@
 [![Build Status](https://secure.travis-ci.org/gfk-ba/carbon-router.png)](http://travis-ci.org/gfk-ba/carbon-router)
 
+# DEPRECATED
+We will no longer support or develop this router. Use at your own risk. We've switched to https://github.com/meteorhacks/flow-router we recommend you do the same. It's the same idea as carbon-router but with more time and thought put into it.
+
 # Carbon-router
 
 An alternative, lightweight, modular, customisable client side router for Meteor.
